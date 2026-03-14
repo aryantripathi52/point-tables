@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal | BGHQ</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="adminLogin" class="admin-login-wrapper">
+        <div class="admin-card neon-border-purple">
+            <h2 class="neon-text-purple">BGHQ ADMIN</h2>
+            <div class="input-group">
+                <label class="label-small">Admin ID</label>
+                <input type="text" id="adminId" placeholder="admin052">
+            </div>
+            <div class="input-group">
+                <label class="label-small">Password</label>
+                <input type="password" id="adminPass" placeholder="••••••••">
+            </div>
+            <button class="btn btn-blue" style="width: 100%;" onclick="checkAdminLogin()">ACCESS PORTAL</button>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="admin-dashboard" style="display: none;">
+        <aside class="admin-sidebar sidebar">
+            <div class="logo" style="margin-bottom: 40px; color: var(--neon-purple); text-shadow: 0 0 10px var(--neon-purple);">BGHQ PORTAL</div>
+            <div class="sidebar-block">
+                <button class="btn btn-blue active" style="text-align: left; padding: 12px;">USERS</button>
+                <button class="btn btn-blue" style="text-align: left; padding: 12px; margin-top: 10px;">CREATORS</button>
+                <button class="btn btn-blue" style="text-align: left; padding: 12px; margin-top: 10px;">PRO USERS</button>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <h2 class="neon-text-purple">USER MANAGEMENT</h2>
+                <div style="display: flex; gap: 15px;">
+                    <input type="text" placeholder="Search users..." class="neon-border-blue" style="background: transparent; padding: 8px 15px; color: #fff; outline: none; font-family: 'Rajdhani';">
+                    <button class="btn btn-green" style="padding: 8px 20px;">+ ADD USER</button>
+                </div>
+            </div>
+
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>SNO.</th>
+                        <th>USERNAME</th>
+                        <th>START DATE</th>
+                        <th>END DATE</th>
+                        <th>STATUS</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTableBody">
+                    <tr>
+                        <td>01</td>
+                        <td>AryanHelper</td>
+                        <td>12/03/2026</td>
+                        <td>12/04/2026</td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </td>
+                        <td>
+                            <button class="btn" style="color: var(--neon-pink); font-size: 10px; padding: 5px;">BAN</button>
+                            <button class="btn" style="color: #666; font-size: 10px; padding: 5px;" onclick="confirm('Delete user?')">DELETE</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>02</td>
+                        <td>GamerPro99</td>
+                        <td>10/03/2026</td>
+                        <td>10/04/2026</td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </td>
+                        <td>
+                            <button class="btn" style="color: var(--neon-pink); font-size: 10px; padding: 5px;">BAN</button>
+                            <button class="btn" style="color: #666; font-size: 10px; padding: 5px;">DELETE</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        function checkAdminLogin() {
+            const id = document.getElementById('adminId').value;
+            const pass = document.getElementById('adminPass').value;
+            const card = document.querySelector('.admin-card');
+
+            if (id === 'admin052' && pass === 'admin520') {
+                document.getElementById('adminLogin').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'flex';
+            } else {
+                card.classList.add('shake');
+                setTimeout(() => card.classList.remove('shake'), 500);
+            }
+        }
+    </script>
+</body>
+</html>

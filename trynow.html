@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Try BGHQ | Trial Version</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        body { user-select: none; }
+        img { user-drag: none; -webkit-user-drag: none; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+    <nav>
+        <div class="logo">BGHQ <span style="font-size: 10px; color: var(--neon-pink);">TRIAL</span></div>
+        <div class="nav-right">
+            <a href="index.html" class="btn btn-blue" style="padding: 8px 20px;">BACK</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-block">
+                <span class="label-small">Assets</span>
+                <div class="dropdown">
+                    <button class="btn btn-blue" style="width: 100%; font-size: 10px; padding: 8px;">IMPORT IMAGE</button>
+                    <div class="dropdown-content neon-border-blue">
+                        <div class="dropdown-item">Local Storage (Trial)</div>
+                        <div class="dropdown-item">Google Drive (Trial)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="sidebar-block">
+                <span class="label-small">Preview / Place</span>
+                <div class="asset-preview"></div>
+            </div>
+            <div class="sidebar-block">
+                <span class="label-small">Workflow</span>
+                <button class="btn btn-green" style="width: 100%; font-size: 10px; padding: 8px; margin-bottom: 5px;">CREATE MACRO</button>
+                <button class="btn btn-blue" style="width: 100%; font-size: 10px; padding: 8px;">APPLY MACRO</button>
+            </div>
+            <div style="margin-top: auto;">
+                <button class="btn" id="trialDownloadBtn" style="width: 100%; border: 2px solid var(--neon-pink); color: var(--neon-pink); box-shadow: 0 0 10px var(--neon-pink);">DOWNLOAD PNG</button>
+            </div>
+        </aside>
+
+        <!-- Center Canvas -->
+        <main class="main-canvas-area" id="canvasArea">
+            <div class="watermark">BGHQ TRIAL — NOT FOR DOWNLOAD</div>
+            <div class="point-table-template" id="mainTableTemplate">
+                <div class="table-header">
+                    <div class="tournament-name" contenteditable="true">TRIAL TOURNAMENT</div>
+                    <div class="logo" style="font-size: 14px;">BGHQ</div>
+                    <div class="date-field" contenteditable="true">DATE: 01/01/2026</div>
+                </div>
+                <table class="point-table">
+                    <thead>
+                        <tr>
+                            <th>RANK</th>
+                            <th style="text-align: left;">TEAM NAME</th>
+                            <th>MP</th>
+                            <th>PP</th>
+                            <th>KP</th>
+                            <th>TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <script>
+                            for(let i=1; i<=12; i++) {
+                                document.write(`<tr><td>${i}</td><td contenteditable="true" style="text-align: left;">TEAM ${i}</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td></tr>`);
+                            }
+                        </script>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <!-- Right Toolbar -->
+        <aside class="toolbar">
+            <div class="tool-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="12" width="20" height="8" rx="2"/><path d="M7 2h10l5 5v13a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7l5-5z"/><path d="M7 2v5h5"/></svg></div>
+            <div class="tool-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.92 0 1.7-.39 2.3-1.03.35-.37.38-.93.22-1.42a1.45 1.45 0 0 0-.25-.38l-.63-.78A1.94 1.94 0 0 1 13 17.5a1.5 1.5 0 0 1 1.5-1.5c.34 0 .68.1 1.05.28a4 4 0 0 0 4.15-.49C21.05 14.7 22 13.43 22 12c0-5.5-4.5-10-10-10z"/></svg></div>
+            <div class="tool-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+            <div class="tool-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg></div>
+            <div class="tool-icon active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg></div>
+        </aside>
+    </div>
+
+    <!-- Blur Overlay -->
+    <div class="blur-overlay" id="blurOverlay">
+        <div>
+            <h1 class="neon-text-pink">PAUSED</h1>
+            <p>Return to tab to continue</p>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="downloadModal">
+        <div class="modal-content neon-border-blue">
+            <h2 class="neon-text-blue">Want to download? Join BGHQ!</h2>
+            <p style="margin: 20px 0;">Get full access, no watermarks, and unlimited downloads.</p>
+            <a href="#" class="btn btn-blue" style="width: 100%; border-radius: 20px;">JOIN DISCORD</a>
+            <button class="btn btn-pink" style="margin-top: 15px; font-size: 10px;" onclick="document.getElementById('downloadModal').style.display='none'">CLOSE</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Specific restrictions for Try Now
+        document.addEventListener('keydown', e => {
+            if (e.key === 'PrintScreen' || 
+                (e.ctrlKey && (e.key === 's' || e.key === 'p' || e.shiftKey && e.key === 'I' || e.key === 'u')) ||
+                e.key === 'F12') {
+                e.preventDefault();
+                alert('Restricted in Trial Mode!');
+            }
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            document.getElementById('blurOverlay').style.display = document.hidden ? 'flex' : 'none';
+        });
+
+        window.addEventListener('blur', () => {
+           document.getElementById('canvasArea').style.opacity = '0';
+        });
+        window.addEventListener('focus', () => {
+           document.getElementById('canvasArea').style.opacity = '1';
+        });
+
+        document.getElementById('trialDownloadBtn').onclick = () => {
+            document.getElementById('downloadModal').style.display = 'flex';
+        };
+    </script>
+</body>
+</html>
