@@ -10,6 +10,25 @@
     --text-secondary: #a0a0ff;
     --grid-color: rgba(0, 240, 255, 0.05);
     --scanline-color: rgba(18, 16, 16, 0.3);
+    --nav-bg: rgba(5, 5, 8, 0.8);
+    --card-bg: #0a0a14;
+    --sidebar-bg: rgba(5, 5, 8, 0.9);
+}
+
+/* ── Light Mode overrides ── */
+body.light-mode {
+    --bg-color: #f0f0f0;
+    --neon-blue: #006fba;
+    --neon-purple: #7a00cc;
+    --neon-green: #1a8c00;
+    --neon-pink: #cc0030;
+    --text-primary: #111111;
+    --text-secondary: #4444aa;
+    --grid-color: rgba(0, 0, 0, 0.07);
+    --scanline-color: rgba(200, 200, 200, 0.4);
+    --nav-bg: rgba(240, 240, 240, 0.88);
+    --card-bg: #ffffff;
+    --sidebar-bg: rgba(230, 230, 235, 0.95);
 }
 
 * {
@@ -24,6 +43,7 @@ body {
     font-family: 'Rajdhani', sans-serif;
     overflow-x: hidden;
     min-height: 100vh;
+    transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 h1, h2, h3, h4, h5, h6, .logo {
@@ -123,9 +143,10 @@ nav {
     top: 0;
     width: 100%;
     z-index: 100;
-    background: rgba(5, 5, 8, 0.8);
+    background: var(--nav-bg);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+    transition: background 0.4s ease, border-color 0.4s ease;
 }
 
 .logo {
@@ -278,12 +299,13 @@ nav {
 }
 
 .sidebar {
-    background: rgba(5, 5, 8, 0.9);
+    background: var(--sidebar-bg);
     border-right: 1px solid rgba(0, 240, 255, 0.2);
     padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 20px;
+    transition: background 0.4s ease;
 }
 
 .toolbar {
@@ -492,10 +514,11 @@ nav {
 .admin-card {
     width: 400px;
     padding: 40px;
-    background: #0a0a14;
+    background: var(--card-bg);
     border: 1px solid var(--neon-purple);
     box-shadow: 0 0 30px rgba(191, 0, 255, 0.2);
     text-align: center;
+    transition: background 0.4s ease;
 }
 
 .admin-card h2 {
@@ -541,7 +564,8 @@ nav {
 .admin-sidebar {
     width: 250px;
     border-right: 1px solid var(--neon-purple);
-    background: #050508;
+    background: var(--sidebar-bg);
+    transition: background 0.4s ease;
 }
 
 .admin-main {
@@ -595,7 +619,7 @@ nav {
     text-align: center;
 }
 
-/* Toggle Switch */
+/* Toggle Switch (admin table rows) */
 .switch {
     position: relative;
     display: inline-block;
@@ -618,6 +642,38 @@ nav {
 }
 input:checked + .slider { background-color: var(--neon-green); box-shadow: 0 0 10px var(--neon-green);}
 input:checked + .slider:before { transform: translateX(20px); }
+
+/* ── Theme Toggle Button ── */
+.theme-toggle {
+    background: transparent;
+    border: 1px solid var(--neon-blue);
+    color: var(--text-primary);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 18px;
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.25);
+    transition: all 0.4s ease;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.theme-toggle:hover {
+    background: rgba(0, 240, 255, 0.12);
+    box-shadow: 0 0 18px var(--neon-blue);
+    transform: rotate(20deg) scale(1.1);
+}
+body.light-mode .theme-toggle {
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 8px rgba(122, 0, 204, 0.3);
+}
+body.light-mode .theme-toggle:hover {
+    background: rgba(122, 0, 204, 0.1);
+    box-shadow: 0 0 18px var(--neon-purple);
+}
 
 /* Mobile Responsive */
 @media (max-width: 768px) {

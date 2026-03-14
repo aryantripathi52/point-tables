@@ -1,5 +1,36 @@
 // BGHQ - Core Logic
 
+// ── Theme Toggle (shared across all pages) ──────────────────────────────────
+(function () {
+    const STORAGE_KEY = 'bghq_theme';
+    const LIGHT_CLASS = 'light-mode';
+
+    // Apply saved theme immediately (before first paint)
+    if (localStorage.getItem(STORAGE_KEY) === 'light') {
+        document.body.classList.add(LIGHT_CLASS);
+    }
+
+    function updateIcon(btn, isLight) {
+        btn.textContent = isLight ? '☀️' : '🌙';
+        btn.title = isLight ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const btn = document.getElementById('themeToggleBtn');
+        if (!btn) return;
+
+        const isLight = document.body.classList.contains(LIGHT_CLASS);
+        updateIcon(btn, isLight);
+
+        btn.addEventListener('click', function () {
+            const nowLight = document.body.classList.toggle(LIGHT_CLASS);
+            localStorage.setItem(STORAGE_KEY, nowLight ? 'light' : 'dark');
+            updateIcon(btn, nowLight);
+        });
+    });
+})();
+// ────────────────────────────────────────────────────────────────────────────
+
 // Asset Import Handling
 const fileInput = document.getElementById('fileInput');
 const assetPreview = document.getElementById('assetPreview');
