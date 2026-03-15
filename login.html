@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | BGHQ</title>
+    <meta name="description" content="Login or register to BGHQ — Professional Free Fire Point Table Generator.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="index.css">
+    <style>
+        /* ── Login page layout ── */
+        .auth-wrapper {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 90px 20px 40px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 440px;
+            background: var(--card-bg);
+            border: 1px solid var(--neon-blue);
+            box-shadow: 0 0 40px rgba(0,240,255,0.15), 0 0 80px rgba(0,240,255,0.04);
+            padding: 44px 40px;
+            border-radius: 10px;
+            transition: background var(--transition);
+            animation: modalIn 0.4s ease;
+        }
+
+        .auth-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--neon-blue);
+            text-shadow: 0 0 14px var(--neon-blue);
+            letter-spacing: 4px;
+            text-align: center;
+            margin-bottom: 6px;
+            animation: neonPulse 3s ease-in-out infinite;
+        }
+
+        .auth-subtitle {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 32px;
+            letter-spacing: 1px;
+        }
+
+        /* Tab switcher */
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 28px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+            background: transparent;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+        }
+
+        .auth-tab.active {
+            color: var(--neon-blue);
+            border-bottom-color: var(--neon-blue);
+            text-shadow: 0 0 8px var(--neon-blue);
+        }
+
+        /* Form panels */
+        .auth-panel { display: none; }
+        .auth-panel.active { display: block; animation: pageIn 0.35s ease; }
+
+        /* Inputs */
+        .auth-field {
+            margin-bottom: 16px;
+        }
+
+        .auth-field label {
+            display: block;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            color: var(--text-secondary);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .auth-field input {
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            padding: 12px 14px;
+            color: var(--text-primary);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 15px;
+            outline: none;
+            border-radius: 4px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            padding-right: 44px; /* room for eye button */
+        }
+
+        /* Password wrapper + eye toggle */
+        .pass-wrap {
+            position: relative;
+        }
+
+        .show-pass {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 42px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: var(--text-secondary);
+            transition: color 0.25s, transform 0.2s;
+            padding: 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .show-pass:hover {
+            color: var(--neon-blue);
+            transform: scale(1.15);
+        }
+
+        .auth-field input:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0,240,255,0.25);
+        }
+
+        .auth-field input.error {
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 8px rgba(255,0,60,0.3);
+        }
+
+        .auth-err {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            color: var(--neon-pink);
+            padding: 10px 14px;
+            border: 1px solid rgba(255,0,60,0.3);
+            background: rgba(255,0,60,0.06);
+            border-radius: 4px;
+            margin-bottom: 16px;
+            display: none;
+            line-height: 1.5;
+        }
+
+        .auth-err.show { display: block; }
+
+        .auth-success {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            color: var(--neon-green);
+            padding: 10px 14px;
+            border: 1px solid rgba(57,255,20,0.3);
+            background: rgba(57,255,20,0.06);
+            border-radius: 4px;
+            margin-bottom: 16px;
+            display: none;
+            line-height: 1.5;
+        }
+
+        .auth-success.show { display: block; }
+
+        .auth-submit {
+            width: 100%;
+            margin-top: 6px;
+        }
+
+        .auth-divider {
+            text-align: center;
+            margin: 16px 0;
+            color: var(--text-secondary);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 12px;
+            position: relative;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 38%;
+            height: 1px;
+            background: var(--border-subtle);
+        }
+
+        .auth-divider::before { left: 0; }
+        .auth-divider::after  { right: 0; }
+
+        .forgot-link {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 12px;
+            color: var(--neon-blue);
+            cursor: pointer;
+            text-align: right;
+            display: block;
+            margin-top: -10px;
+            margin-bottom: 16px;
+            transition: text-shadow 0.3s;
+            background: none;
+            border: none;
+        }
+
+        .forgot-link:hover {
+            text-shadow: 0 0 8px var(--neon-blue);
+        }
+
+        /* Page-blocked messages */
+        .blocked-card {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .blocked-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .blocked-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .blocked-msg {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        /* Loading state on button */
+        .btn.loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .btn.loading::after {
+            content: ' …';
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="bghq-loader">
+        <div class="loader-ring"></div>
+        <div class="loader-text">BGHQ</div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav>
+        <a href="index.html" class="logo" style="text-decoration:none;">BGHQ</a>
+        <div class="nav-right">
+            <button id="themeToggleBtn" class="theme-toggle" title="Switch to Light Mode">🌙</button>
+            <a href="index.html" class="btn btn-blue" style="padding:8px 20px;">HOME</a>
+        </div>
+    </nav>
+
+    <!-- AUTH CARD (normal login/register) -->
+    <div class="auth-wrapper" id="authWrapper">
+        <div class="auth-card">
+            <div class="auth-logo">BGHQ</div>
+            <div class="auth-subtitle">Professional Free Fire Point Table Generator</div>
+
+            <!-- Tab buttons -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tabLogin"    onclick="switchTab('login')">LOGIN</button>
+                <button class="auth-tab"         id="tabRegister" onclick="switchTab('register')">REGISTER</button>
+            </div>
+
+            <!-- ── LOGIN PANEL ── -->
+            <div class="auth-panel active" id="panelLogin">
+                <div class="auth-err" id="loginErr"></div>
+                <div class="auth-field">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email">
+                </div>
+                <div class="auth-field">
+                    <label>Password</label>
+                    <div class="pass-wrap">
+                        <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+                        <button type="button" class="show-pass" onclick="togglePass('loginPass', this)" tabindex="-1" title="Show / Hide password">👁</button>
+                    </div>
+                </div>
+                <button class="forgot-link" onclick="switchTab('forgot')">Forgot password?</button>
+                <button class="btn btn-blue auth-submit" id="loginBtn" onclick="doLogin()">LOGIN</button>
+            </div>
+
+            <!-- ── REGISTER PANEL ── -->
+            <div class="auth-panel" id="panelRegister">
+                <div class="auth-err" id="registerErr"></div>
+                <div class="auth-success" id="registerSuccess"></div>
+                <div class="auth-field">
+                    <label>Username</label>
+                    <input type="text" id="regUsername" placeholder="GamerTag999" autocomplete="off" maxlength="30">
+                </div>
+                <div class="auth-field">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="you@example.com" autocomplete="email">
+                </div>
+                <div class="auth-field">
+                    <label>Password</label>
+                    <div class="pass-wrap">
+                        <input type="password" id="regPass" placeholder="Min 6 characters" autocomplete="new-password">
+                        <button type="button" class="show-pass" onclick="togglePass('regPass', this)" tabindex="-1" title="Show / Hide password">👁</button>
+                    </div>
+                </div>
+                <button class="btn btn-green auth-submit" id="registerBtn" onclick="doRegister()">CREATE ACCOUNT</button>
+            </div>
+
+            <!-- ── FORGOT PASSWORD PANEL ── -->
+            <div class="auth-panel" id="panelForgot">
+                <div class="auth-err" id="forgotErr"></div>
+                <div class="auth-success" id="forgotSuccess"></div>
+                <p style="font-family:'Rajdhani';font-size:14px;color:var(--text-secondary);margin-bottom:20px;line-height:1.5;">
+                    Enter your email and we'll send you a password reset link.
+                </p>
+                <div class="auth-field">
+                    <label>Email</label>
+                    <input type="email" id="forgotEmail" placeholder="you@example.com">
+                </div>
+                <button class="btn btn-blue auth-submit" id="forgotBtn" onclick="doForgotPassword()">SEND RESET LINK</button>
+                <div class="auth-divider">or</div>
+                <button class="btn auth-submit" onclick="switchTab('login')" style="border-color:var(--border-subtle);color:var(--text-secondary);font-size:11px;margin-top:0;">BACK TO LOGIN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BLOCKED — Banned user card (shown instead of normal card) -->
+    <div class="auth-wrapper" id="bannedWrapper" style="display:none;">
+        <div class="auth-card" style="border-color:var(--neon-pink);box-shadow:0 0 35px rgba(255,0,60,0.25);">
+            <div class="blocked-card">
+                <div class="blocked-icon">🚫</div>
+                <div class="blocked-title" style="color:var(--neon-pink);">ACCESS REVOKED</div>
+                <div class="blocked-msg">
+                    Your account has been banned by an administrator.<br>
+                    Contact admin on Discord to appeal.
+                </div>
+                <a href="#discord" class="btn btn-pink" style="display:block;margin-bottom:12px;">JOIN DISCORD</a>
+                <button class="btn" onclick="doSignOut()" style="border-color:var(--border-subtle);color:var(--text-secondary);font-size:10px;width:100%;">SIGN OUT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BLOCKED — Expired subscription card -->
+    <div class="auth-wrapper" id="expiredWrapper" style="display:none;">
+        <div class="auth-card" style="border-color:var(--neon-orange,#ff8c00);box-shadow:0 0 35px rgba(255,140,0,0.2);">
+            <div class="blocked-card">
+                <div class="blocked-icon">⏰</div>
+                <div class="blocked-title" style="color:var(--neon-orange,#ff8c00);">SUBSCRIPTION EXPIRED</div>
+                <div class="blocked-msg">
+                    Your subscription has expired.<br>
+                    Renew on Discord to continue using BGHQ Pro features.
+                </div>
+                <a href="#discord" class="btn btn-green" style="display:block;margin-bottom:12px;">RENEW ON DISCORD</a>
+                <button class="btn btn-blue" style="display:block;width:100%;margin-bottom:10px;" onclick="window.location.href='trynow.html'">USE FREE TRIAL</button>
+                <button class="btn" onclick="doSignOut()" style="border-color:var(--border-subtle);color:var(--text-secondary);font-size:10px;width:100%;">SIGN OUT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast"></div>
+
+    <script src="app.js"></script>
+    <script>
+        function togglePass(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const isHidden = input.type === 'password';
+            input.type   = isHidden ? 'text' : 'password';
+            btn.textContent = isHidden ? '🙈' : '👁';
+            btn.title       = isHidden ? 'Hide password' : 'Show password';
+        }
+    </script>
+    <script type="module">
+        import { supabase } from './supabase-config.js';
+
+        // Expose supabase globally for the inline onclick handlers
+        window.__supabase = supabase;
+
+        // ── Tab switching ───────────────────────────────────────────────────
+        window.switchTab = function(tab) {
+            ['login','register','forgot'].forEach(t => {
+                document.getElementById(`tab${t.charAt(0).toUpperCase()+t.slice(1)}`)?.classList.remove('active');
+                document.getElementById(`panel${t.charAt(0).toUpperCase()+t.slice(1)}`)?.classList.remove('active');
+            });
+            const tabEl   = document.getElementById(`tab${tab.charAt(0).toUpperCase()+tab.slice(1)}`);
+            const panelEl = document.getElementById(`panel${tab.charAt(0).toUpperCase()+tab.slice(1)}`);
+            if (tabEl)   tabEl.classList.add('active');
+            if (panelEl) panelEl.classList.add('active');
+        };
+
+        // ── Check existing session on load ──────────────────────────────────
+        (async function checkSession() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return; // not logged in: show normal form
+
+            // User is already logged in — check their status
+            const { data: profile } = await supabase
+                .from('users')
+                .select('status, subscription_end')
+                .eq('id', session.user.id)
+                .single();
+
+            if (!profile) {
+                // Profile row missing — signed out state
+                await supabase.auth.signOut();
+                return;
+            }
+
+            if (profile.status === 'banned') {
+                document.getElementById('authWrapper').style.display   = 'none';
+                document.getElementById('bannedWrapper').style.display = 'flex';
+                return;
+            }
+
+            if (profile.status === 'rejected') {
+                document.getElementById('authWrapper').style.display   = 'none';
+                document.getElementById('bannedWrapper').style.display = 'flex';
+                return;
+            }
+
+            // Check subscription expiry only for non-free tiers
+            const now = new Date();
+            if (profile.subscription_end && new Date(profile.subscription_end) < now) {
+                document.getElementById('authWrapper').style.display    = 'none';
+                document.getElementById('expiredWrapper').style.display = 'flex';
+                return;
+            }
+
+            // All good — redirect 
+            window.location.href = 'dashboard.html';
+        })();
+
+        // ── LOGIN ───────────────────────────────────────────────────────────
+        window.doLogin = async function() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass  = document.getElementById('loginPass').value;
+            const btn   = document.getElementById('loginBtn');
+            const errEl = document.getElementById('loginErr');
+
+            errEl.classList.remove('show');
+
+            if (!email || !pass) {
+                errEl.textContent = 'Please fill in all fields.';
+                errEl.classList.add('show');
+                return;
+            }
+
+            btn.classList.add('loading');
+            btn.textContent = 'LOGGING IN';
+
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+
+            btn.classList.remove('loading');
+            btn.textContent = 'LOGIN';
+
+            if (error) {
+                errEl.textContent = error.message.includes('Invalid') 
+                    ? 'Incorrect email or password.' 
+                    : error.message;
+                errEl.classList.add('show');
+                return;
+            }
+
+            // Fetch profile to check status
+            const { data: profile } = await supabase
+                .from('users')
+                .select('status, subscription_end')
+                .eq('id', data.user.id)
+                .single();
+
+            if (!profile) {
+                // Profile insert may be pending — allow through to dashboard
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            if (profile.status === 'banned' || profile.status === 'rejected') {
+                await supabase.auth.signOut();
+                document.getElementById('authWrapper').style.display   = 'none';
+                document.getElementById('bannedWrapper').style.display = 'flex';
+                return;
+            }
+
+            const now = new Date();
+            if (profile.subscription_end && new Date(profile.subscription_end) < now) {
+                document.getElementById('authWrapper').style.display    = 'none';
+                document.getElementById('expiredWrapper').style.display = 'flex';
+                return;
+            }
+
+            window.location.href = 'dashboard.html';
+        };
+
+        // ── REGISTER ────────────────────────────────────────────────────────
+        window.doRegister = async function() {
+            const username = document.getElementById('regUsername').value.trim();
+            const email    = document.getElementById('regEmail').value.trim();
+            const pass     = document.getElementById('regPass').value;
+            const btn      = document.getElementById('registerBtn');
+            const errEl    = document.getElementById('registerErr');
+            const sucEl    = document.getElementById('registerSuccess');
+
+            errEl.classList.remove('show');
+            sucEl.classList.remove('show');
+
+            if (!username || !email || !pass) {
+                errEl.textContent = 'Please fill in all fields.';
+                errEl.classList.add('show');
+                return;
+            }
+
+            if (username.length < 3) {
+                errEl.textContent = 'Username must be at least 3 characters.';
+                errEl.classList.add('show');
+                return;
+            }
+
+            if (pass.length < 6) {
+                errEl.textContent = 'Password must be at least 6 characters.';
+                errEl.classList.add('show');
+                return;
+            }
+
+            btn.classList.add('loading');
+            btn.textContent = 'CREATING ACCOUNT';
+
+            // 1 — Create Supabase auth user
+            const { data: authData, error: authErr } = await supabase.auth.signUp({
+                email,
+                password: pass,
+                options: { data: { username } }
+            });
+
+            if (authErr) {
+                btn.classList.remove('loading');
+                btn.textContent = 'CREATE ACCOUNT';
+                errEl.textContent = authErr.message;
+                errEl.classList.add('show');
+                return;
+            }
+
+            // 2 — Insert into `users` table
+            if (authData.user) {
+                await supabase.from('users').insert({
+                    id:                authData.user.id,
+                    username,
+                    email,
+                    subscription_type: 'free',
+                    status:            'active',
+                    days_left:         0
+                });
+            }
+
+            btn.classList.remove('loading');
+            btn.textContent = 'CREATE ACCOUNT';
+
+            sucEl.textContent = '✅ Account created! Check your email to confirm, then login.';
+            sucEl.classList.add('show');
+        };
+
+        // ── FORGOT PASSWORD ─────────────────────────────────────────────────
+        window.doForgotPassword = async function() {
+            const email = document.getElementById('forgotEmail').value.trim();
+            const btn   = document.getElementById('forgotBtn');
+            const errEl = document.getElementById('forgotErr');
+            const sucEl = document.getElementById('forgotSuccess');
+
+            errEl.classList.remove('show');
+            sucEl.classList.remove('show');
+
+            if (!email) {
+                errEl.textContent = 'Please enter your email address.';
+                errEl.classList.add('show');
+                return;
+            }
+
+            btn.classList.add('loading');
+            btn.textContent = 'SENDING';
+
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/login.html`
+            });
+
+            btn.classList.remove('loading');
+            btn.textContent = 'SEND RESET LINK';
+
+            if (error) {
+                errEl.textContent = error.message;
+                errEl.classList.add('show');
+                return;
+            }
+
+            sucEl.textContent = '✅ Reset link sent! Check your inbox (and spam folder).';
+            sucEl.classList.add('show');
+        };
+
+        // ── SIGN OUT ────────────────────────────────────────────────────────
+        window.doSignOut = async function() {
+            await supabase.auth.signOut();
+            window.location.reload();
+        };
+
+        // ── Allow Enter key to submit forms ────────────────────────────────
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter') return;
+            const activePanel = document.querySelector('.auth-panel.active')?.id;
+            if (activePanel === 'panelLogin')    window.doLogin();
+            if (activePanel === 'panelRegister') window.doRegister();
+            if (activePanel === 'panelForgot')   window.doForgotPassword();
+        });
+    </script>
+</body>
+</html>

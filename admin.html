@@ -4,119 +4,654 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Portal | BGHQ</title>
+    <meta name="description" content="BGHQ Admin Portal — Manage users, creators and pro users.">
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="index.css">
+    <style>
+        /* Admin-specific styles */
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .status-badge.approved {
+            background: rgba(57,255,20,0.12);
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+        }
+        .status-badge.pending {
+            background: rgba(255,140,0,0.12);
+            border: 1px solid var(--neon-orange);
+            color: var(--neon-orange);
+        }
+        .status-badge.banned {
+            background: rgba(255,0,60,0.12);
+            border: 1px solid var(--neon-pink);
+            color: var(--neon-pink);
+        }
+        .action-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            letter-spacing: 1px;
+            padding: 5px 9px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+        .action-btn.ban-btn {
+            color: var(--neon-pink);
+            border-color: rgba(255,0,60,0.3);
+        }
+        .action-btn.ban-btn:hover {
+            background: rgba(255,0,60,0.1);
+            box-shadow: 0 0 8px rgba(255,0,60,0.3);
+        }
+        .action-btn.delete-btn {
+            color: #666;
+            border-color: rgba(100,100,100,0.3);
+        }
+        .action-btn.delete-btn:hover {
+            color: var(--neon-pink);
+            border-color: var(--neon-pink);
+        }
+        .admin-card h2 { letter-spacing: 2px; }
+        /* Add User Form */
+        .add-user-form {
+            background: var(--card-bg);
+            border: 1px solid var(--neon-purple);
+            box-shadow: 0 0 20px rgba(191,0,255,0.1);
+            padding: 28px;
+            border-radius: 8px;
+            margin-bottom: 28px;
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            align-items: end;
+            animation: modalIn 0.3s ease;
+        }
+        .add-user-form.open { display: grid; }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-field label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            color: var(--text-secondary);
+            letter-spacing: 1.5px;
+        }
+
+        .form-field input,
+        .form-field select {
+            background: transparent;
+            border: 1px solid rgba(191,0,255,0.35);
+            padding: 9px 11px;
+            color: var(--text-primary);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            outline: none;
+            border-radius: 3px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-field select option {
+            background: #0a0a14;
+        }
+
+        body.light-mode .form-field select option {
+            background: #f0f0f0;
+            color: #111;
+        }
+
+        .form-field input:focus,
+        .form-field select:focus {
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 8px rgba(191,0,255,0.3);
+        }
+
+        .admin-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        /* Confirm modal */
+        .confirm-modal .modal-content {
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 30px rgba(255,0,60,0.25);
+            max-width: 340px;
+        }
+    </style>
 </head>
 <body>
-    <!-- Shared Navbar -->
+    <!-- Loading Spinner -->
+    <div id="bghq-loader">
+        <div class="loader-ring"></div>
+        <div class="loader-text">BGHQ ADMIN</div>
+    </div>
+
+    <!-- NAVBAR -->
     <nav>
-        <div class="logo">BGHQ <span style="font-size: 10px; color: var(--neon-purple);">ADMIN</span></div>
+        <div class="logo">BGHQ <span style="font-size:10px; color:var(--neon-purple); letter-spacing:1px;">ADMIN</span></div>
         <div class="nav-right">
             <button id="themeToggleBtn" class="theme-toggle" title="Switch to Light Mode">🌙</button>
-            <a href="index.html" class="btn btn-blue" style="padding: 8px 20px;">BACK</a>
+            <a href="index.html" class="btn btn-blue" style="padding:8px 20px;">BACK</a>
         </div>
     </nav>
 
-    <!-- Login Screen -->
-
-    <div id="adminLogin" class="admin-login-wrapper">
-        <div class="admin-card neon-border-purple">
+    <!-- ═══════════════════════════════════════════
+         LOGIN SCREEN
+    ════════════════════════════════════════════ -->
+    <div id="adminLogin" class="admin-login-wrapper" style="padding-top:70px;">
+        <div class="admin-card neon-border-purple" id="adminCard">
             <h2 class="neon-text-purple">BGHQ ADMIN</h2>
             <div class="input-group">
-                <label class="label-small">Admin ID</label>
-                <input type="text" id="adminId" placeholder="admin052">
+                <label>Admin ID</label>
+                <input type="text" id="adminId" placeholder="Enter admin ID" autocomplete="off">
             </div>
             <div class="input-group">
-                <label class="label-small">Password</label>
-                <input type="password" id="adminPass" placeholder="••••••••">
+                <label>Password</label>
+                <input type="password" id="adminPass" placeholder="••••••••" autocomplete="off">
             </div>
-            <button class="btn btn-blue" style="width: 100%;" onclick="checkAdminLogin()">ACCESS PORTAL</button>
+            <div id="loginErr" style="color:var(--neon-pink);font-family:'Rajdhani';font-size:13px;margin-bottom:14px;display:none;min-height:18px;">Incorrect credentials. Try again.</div>
+            <button class="btn btn-purple" style="width:100%;" onclick="checkAdminLogin()">ACCESS PORTAL</button>
         </div>
     </div>
 
-    <!-- Admin Dashboard -->
-    <div id="adminDashboard" class="admin-dashboard" style="display: none;">
-        <aside class="admin-sidebar sidebar">
-            <div class="logo" style="margin-bottom: 40px; color: var(--neon-purple); text-shadow: 0 0 10px var(--neon-purple);">BGHQ PORTAL</div>
-            <div class="sidebar-block">
-                <button class="btn btn-blue active" style="text-align: left; padding: 12px;">USERS</button>
-                <button class="btn btn-blue" style="text-align: left; padding: 12px; margin-top: 10px;">CREATORS</button>
-                <button class="btn btn-blue" style="text-align: left; padding: 12px; margin-top: 10px;">PRO USERS</button>
-            </div>
+    <!-- ═══════════════════════════════════════════
+         ADMIN DASHBOARD
+    ════════════════════════════════════════════ -->
+    <div id="adminDashboard" class="admin-dashboard" style="display:none;">
+        <!-- Left sidebar -->
+        <aside class="admin-sidebar">
+            <div style="font-family:'Orbitron';font-size:16px;font-weight:900;color:var(--neon-purple);text-shadow:0 0 10px var(--neon-purple);letter-spacing:3px;margin-bottom:32px;animation:neonPulse 3s ease-in-out infinite;">BGHQ<br><span style="font-size:10px;color:var(--text-secondary);">PORTAL</span></div>
+            <button class="admin-tab-btn active" data-tab="users">👥 Users</button>
+            <button class="admin-tab-btn" data-tab="creators">🎮 Creators</button>
+            <button class="admin-tab-btn" data-tab="prousers">⭐ Pro Users</button>
         </aside>
 
+        <!-- Main content -->
         <main class="admin-main">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                <h2 class="neon-text-purple">USER MANAGEMENT</h2>
-                <div style="display: flex; gap: 15px;">
-                    <input type="text" placeholder="Search users..." class="neon-border-blue" style="background: transparent; padding: 8px 15px; color: #fff; outline: none; font-family: 'Rajdhani';">
-                    <button class="btn btn-green" style="padding: 8px 20px;">+ ADD USER</button>
+            <div class="admin-header-row">
+                <h2 class="neon-text-purple" id="tabTitle" style="font-size:16px;">USER MANAGEMENT</h2>
+                <div style="display:flex;gap:12px;align-items:center;">
+                    <input type="text" id="searchInput" class="admin-search" placeholder="Search by name…">
+                    <button class="btn btn-green" style="padding:9px 18px; font-size:10px;" id="addUserBtn">+ ADD USER</button>
                 </div>
             </div>
 
-            <table class="admin-table">
+            <!-- Add User Form -->
+            <div class="add-user-form" id="addUserForm">
+                <div class="form-field">
+                    <label>Username</label>
+                    <input type="text" id="newUsername" placeholder="GamerTag999">
+                </div>
+                <div class="form-field">
+                    <label>Start Date</label>
+                    <input type="date" id="newStartDate">
+                </div>
+                <div class="form-field">
+                    <label>End Date</label>
+                    <input type="date" id="newEndDate">
+                </div>
+                <div class="form-field">
+                    <label>Type</label>
+                    <select id="newUserType">
+                        <option value="User">User</option>
+                        <option value="Creator">Creator</option>
+                        <option value="Pro User">Pro User</option>
+                    </select>
+                </div>
+                <div class="form-field" style="justify-content:flex-end;">
+                    <button class="btn btn-green" style="font-size:10px;padding:9px 16px;" onclick="submitNewUser()">ADD →</button>
+                </div>
+            </div>
+
+            <!-- Admin Table -->
+            <table class="admin-table" id="adminTable">
                 <thead>
                     <tr>
-                        <th>SNO.</th>
-                        <th>USERNAME</th>
-                        <th>START DATE</th>
-                        <th>END DATE</th>
-                        <th>STATUS</th>
-                        <th>ACTIONS</th>
+                        <th>#</th>
+                        <th>Username</th>
+                        <th>Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody id="adminTableBody">
-                    <tr>
-                        <td>01</td>
-                        <td>AryanHelper</td>
-                        <td>12/03/2026</td>
-                        <td>12/04/2026</td>
-                        <td>
-                            <label class="switch">
-                                <input type="checkbox" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </td>
-                        <td>
-                            <button class="btn" style="color: var(--neon-pink); font-size: 10px; padding: 5px;">BAN</button>
-                            <button class="btn" style="color: #666; font-size: 10px; padding: 5px;" onclick="confirm('Delete user?')">DELETE</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>02</td>
-                        <td>GamerPro99</td>
-                        <td>10/03/2026</td>
-                        <td>10/04/2026</td>
-                        <td>
-                            <label class="switch">
-                                <input type="checkbox">
-                                <span class="slider"></span>
-                            </label>
-                        </td>
-                        <td>
-                            <button class="btn" style="color: var(--neon-pink); font-size: 10px; padding: 5px;">BAN</button>
-                            <button class="btn" style="color: #666; font-size: 10px; padding: 5px;">DELETE</button>
-                        </td>
-                    </tr>
-                </tbody>
+                <tbody id="adminTableBody"></tbody>
             </table>
+
+            <div id="emptyState" style="text-align:center;color:var(--text-secondary);font-family:'Rajdhani';font-size:14px;padding:40px;display:none;">
+                No users found in this tab.
+            </div>
         </main>
     </div>
 
+    <!-- Confirm Delete Modal -->
+    <div class="modal confirm-modal" id="confirmModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('confirmModal')">×</button>
+            <h2 style="color:var(--neon-pink);font-size:14px;margin-bottom:16px;">CONFIRM DELETE</h2>
+            <p style="font-family:'Rajdhani';font-size:15px;color:var(--text-secondary);margin-bottom:28px;" id="confirmMsg">Are you sure you want to delete this user?</p>
+            <button class="btn btn-pink" style="width:100%;margin-bottom:10px;" id="confirmYes">DELETE</button>
+            <button class="btn" onclick="closeModal('confirmModal')" style="width:100%;border-color:rgba(255,255,255,0.15);color:var(--text-secondary);font-size:10px;">CANCEL</button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast"></div>
+
     <script src="app.js"></script>
     <script>
-        function checkAdminLogin() {
-            const id = document.getElementById('adminId').value;
-            const pass = document.getElementById('adminPass').value;
-            const card = document.querySelector('.admin-card');
+    // ═══════════════════════════════════════════════════════════════════════
+    //  ADMIN PANEL — Full Logic
+    // ═══════════════════════════════════════════════════════════════════════
 
-            if (id === 'admin052' && pass === 'admin520') {
-                document.getElementById('adminLogin').style.display = 'none';
+    const ADMIN_ID   = 'admin052';
+    const ADMIN_PASS = 'admin520';
+    const LS_KEY     = 'bghq_admin_users';
+
+    let currentTab   = 'users';
+    let pendingDeleteId = null;
+
+    // ── Load / Save users from localStorage ─────────────────────────────
+    function loadUsers() {
+        const raw = localStorage.getItem(LS_KEY);
+        if (!raw) return getDefaultUsers();
+        try { return JSON.parse(raw); } catch { return getDefaultUsers(); }
+    }
+
+    function saveUsers(users) {
+        localStorage.setItem(LS_KEY, JSON.stringify(users));
+    }
+
+    function getDefaultUsers() {
+        return [
+            { id: 1, username: 'AryanHelper',  type: 'User',     startDate: '2026-03-12', endDate: '2026-04-12', status: 'approved', banned: false },
+            { id: 2, username: 'GamerPro99',    type: 'Creator',  startDate: '2026-03-10', endDate: '2026-04-10', status: 'pending',  banned: false },
+            { id: 3, username: 'FFKing2026',    type: 'Pro User', startDate: '2026-03-01', endDate: '2026-04-01', status: 'approved', banned: false },
+        ];
+    }
+
+    let usersDB = loadUsers();
+    window.usersDB = usersDB; // expose for Supabase module
+    window.saveUsers = saveUsers;
+
+    // ── Login Logic ──────────────────────────────────────────────────────
+    function checkAdminLogin() {
+        const id   = document.getElementById('adminId').value.trim();
+        const pass = document.getElementById('adminPass').value.trim();
+        const card = document.getElementById('adminCard');
+        const err  = document.getElementById('loginErr');
+
+        if (id === ADMIN_ID && pass === ADMIN_PASS) {
+            card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'translateX(-40px)';
+            setTimeout(() => {
+                document.getElementById('adminLogin').style.display    = 'none';
                 document.getElementById('adminDashboard').style.display = 'flex';
-            } else {
-                card.classList.add('shake');
-                setTimeout(() => card.classList.remove('shake'), 500);
-            }
+                renderTable();
+            }, 420);
+        } else {
+            err.style.display = 'block';
+            card.classList.remove('shake');
+            void card.offsetWidth; // reflow
+            card.classList.add('shake');
+            setTimeout(() => card.classList.remove('shake'), 600);
         }
+    }
+
+    // Allow Enter key to submit login
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && document.getElementById('adminLogin').style.display !== 'none') {
+            checkAdminLogin();
+        }
+    });
+
+    // ── Tab switching ─────────────────────────────────────────────────────
+    document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTab = btn.dataset.tab;
+            const titles = { users: 'User Management', creators: 'Creator Management', prousers: 'Pro User Management' };
+            document.getElementById('tabTitle').textContent = titles[currentTab];
+            renderTable();
+        });
+    });
+
+    // ── Add User Form Toggle ──────────────────────────────────────────────
+    document.getElementById('addUserBtn').addEventListener('click', () => {
+        document.getElementById('addUserForm').classList.toggle('open');
+    });
+
+    function submitNewUser() {
+        const username  = document.getElementById('newUsername').value.trim();
+        const startDate = document.getElementById('newStartDate').value;
+        const endDate   = document.getElementById('newEndDate').value;
+        const type      = document.getElementById('newUserType').value;
+
+        if (!username || !startDate || !endDate) {
+            showToast('Fill all fields before adding', 'error');
+            return;
+        }
+
+        const maxId = usersDB.length ? Math.max(...usersDB.map(u => u.id)) : 0;
+        usersDB.push({ id: maxId + 1, username, type, startDate, endDate, status: 'pending', banned: false });
+        saveUsers(usersDB);
+
+        // Clear form
+        document.getElementById('newUsername').value  = '';
+        document.getElementById('newStartDate').value = '';
+        document.getElementById('newEndDate').value   = '';
+        document.getElementById('addUserForm').classList.remove('open');
+
+        renderTable();
+        showToast(`User "${username}" added!`, 'success');
+    }
+
+    // ── Search ────────────────────────────────────────────────────────────
+    document.getElementById('searchInput').addEventListener('input', function() {
+        renderTable(this.value.trim().toLowerCase());
+    });
+
+    // ── Render Table ─────────────────────────────────────────────────────
+    function renderTable(filter = '') {
+        window.usersDB = usersDB; // keep in sync
+        const tabTypeMap = { users: 'User', creators: 'Creator', prousers: 'Pro User' };
+        const typeFilter = tabTypeMap[currentTab];
+        let filtered = usersDB.filter(u => u.type === typeFilter);
+        if (filter) filtered = filtered.filter(u => u.username.toLowerCase().includes(filter));
+
+        const tbody = document.getElementById('adminTableBody');
+        tbody.innerHTML = '';
+
+        if (filtered.length === 0) {
+            document.getElementById('emptyState').style.display = 'block';
+            return;
+        }
+        document.getElementById('emptyState').style.display = 'none';
+
+        filtered.forEach((user, idx) => {
+            const tr = document.createElement('tr');
+            if (user.banned) tr.classList.add('banned');
+
+            tr.innerHTML = `
+                <td style="color:var(--text-secondary);font-size:12px;">${String(idx+1).padStart(2,'0')}</td>
+                <td style="font-weight:600;">${user.username}</td>
+                <td><span style="font-family:'Orbitron';font-size:9px;color:var(--neon-blue);">${user.type}</span></td>
+                <td>${formatDate(user.startDate)}</td>
+                <td>${formatDate(user.endDate)}</td>
+                <td>
+                    <label class="switch" title="${user.status === 'approved' ? 'Approved' : 'Pending'}">
+                        <input type="checkbox" ${user.status === 'approved' ? 'checked' : ''} onchange="toggleApprove(${user.id}, this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="status-badge ${user.banned ? 'banned' : user.status}" style="margin-left:8px;">
+                        ${user.banned ? 'Banned' : user.status}
+                    </span>
+                </td>
+                <td style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                    <button class="action-btn ban-btn" onclick="toggleBan(${user.id})">${user.banned ? 'UNBAN' : 'BAN'}</button>
+                    <button class="action-btn delete-btn" onclick="confirmDelete(${user.id})">DELETE</button>
+                </td>`;
+            tbody.appendChild(tr);
+        });
+    }
+
+    window.renderTable = renderTable;
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '—';
+        const [y,m,d] = dateStr.split('-');
+        return `${d}/${m}/${y}`;
+    }
+
+    // ── Approve Toggle ────────────────────────────────────────────────────
+    function toggleApprove(id, checked) {
+        const user = usersDB.find(u => u.id === id);
+        if (!user) return;
+        user.status = checked ? 'approved' : 'pending';
+        saveUsers(usersDB);
+        renderTable(document.getElementById('searchInput').value.toLowerCase());
+        showToast(`${user.username} ${checked ? 'approved' : 'set to pending'}`, 'success');
+    }
+
+    // ── Ban Toggle ────────────────────────────────────────────────────────
+    function toggleBan(id) {
+        const user = usersDB.find(u => u.id === id);
+        if (!user) return;
+        user.banned = !user.banned;
+        saveUsers(usersDB);
+        renderTable(document.getElementById('searchInput').value.toLowerCase());
+        showToast(`${user.username} ${user.banned ? 'banned' : 'unbanned'}`, user.banned ? 'error' : 'success');
+    }
+
+    // ── Delete Confirm ────────────────────────────────────────────────────
+    function confirmDelete(id) {
+        pendingDeleteId = id;
+        const user = usersDB.find(u => u.id === id);
+        document.getElementById('confirmMsg').textContent =
+            `Delete user "${user?.username}"? This cannot be undone.`;
+        openModal('confirmModal');
+    }
+
+    document.getElementById('confirmYes').addEventListener('click', () => {
+        if (pendingDeleteId === null) return;
+        const user = usersDB.find(u => u.id === pendingDeleteId);
+        usersDB = usersDB.filter(u => u.id !== pendingDeleteId);
+        saveUsers(usersDB);
+        pendingDeleteId = null;
+        closeModal('confirmModal');
+        renderTable(document.getElementById('searchInput').value.toLowerCase());
+        showToast(`"${user?.username}" deleted`, 'info');
+    });
+
+    // ── Modal helpers ─────────────────────────────────────────────────────
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            ['confirmModal'].forEach(id => closeModal(id));
+        }
+    });
     </script>
+
+    <!-- ── Supabase Admin CRUD Module ─────────────────────────────────────── -->
+    <script type="module">
+    import { supabase } from './supabase-config.js';
+
+    // ── Flag: admin is logged in (set by checkAdminLogin) ────────────────
+    window.__adminReady = false;
+
+    // ── Called after admin logs in successfully ────────────────────────────
+    window.__initSupabaseAdmin = async function() {
+        if (window.__adminReady) return;
+        window.__adminReady = true;
+
+        await syncFromSupabase();
+
+        // Subscribe to realtime changes on `users` table
+        supabase
+            .channel('admin_users_channel')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, async () => {
+                await syncFromSupabase();
+            })
+            .subscribe();
+    };
+
+    // ── Fetch all users from Supabase and merge into usersDB ──────────────
+    async function syncFromSupabase() {
+        const { data, error } = await supabase
+            .from('users')
+            .select('id, username, email, subscription_type, subscription_start, subscription_end, days_left, status')
+            .order('created_at', { ascending: true });
+
+        if (error) {
+            console.error('[Admin] Supabase fetch error:', error.message);
+            return;
+        }
+
+        if (!data || data.length === 0) return;
+
+        // Map Supabase rows to local usersDB format and replace
+        window.usersDB = data.map((u, idx) => ({
+            id:          u.id,             // use UUID from Supabase
+            username:    u.username || u.email,
+            type:        mapSubType(u.subscription_type),
+            startDate:   u.subscription_start ? u.subscription_start.split('T')[0] : '',
+            endDate:     u.subscription_end   ? u.subscription_end.split('T')[0]   : '',
+            status:      u.status === 'active' ? 'approved' : u.status,
+            banned:      u.status === 'banned',
+            supabaseId:  u.id,
+        }));
+
+        // Re-render after sync
+        if (typeof window.renderTable === 'function') {
+            window.renderTable(document.getElementById('searchInput')?.value?.toLowerCase() || '');
+        }
+    }
+
+    function mapSubType(subType) {
+        if (!subType) return 'User';
+        if (subType.toLowerCase().includes('creator'))  return 'Creator';
+        if (subType.toLowerCase().includes('pro'))       return 'Pro User';
+        return 'User';
+    }
+
+    // ── Override: toggleApprove → Supabase update ─────────────────────────
+    window.__origToggleApprove = window.toggleApprove;
+    window.toggleApprove = async function(id, checked) {
+        const user = (window.usersDB || []).find(u => u.id === id);
+        if (!user) return;
+
+        const newStatus = checked ? 'active' : 'rejected';
+        const { error } = await supabase
+            .from('users')
+            .update({ status: newStatus })
+            .eq('id', id);
+
+        if (error) {
+            showToast('Supabase update failed: ' + error.message, 'error');
+            return;
+        }
+
+        user.status = checked ? 'approved' : 'pending';
+        if (typeof window.saveUsers === 'function') window.saveUsers(window.usersDB);
+        if (typeof window.renderTable === 'function') window.renderTable(document.getElementById('searchInput')?.value?.toLowerCase() || '');
+        showToast(`${user.username} ${checked ? 'approved' : 'set to pending'}`, 'success');
+    };
+
+    // ── Override: toggleBan → Supabase update ────────────────────────────
+    window.__origToggleBan = window.toggleBan;
+    window.toggleBan = async function(id) {
+        const user = (window.usersDB || []).find(u => u.id === id);
+        if (!user) return;
+
+        const newBanned   = !user.banned;
+        const newStatus   = newBanned ? 'banned' : 'active';
+
+        const { error } = await supabase
+            .from('users')
+            .update({ status: newStatus })
+            .eq('id', id);
+
+        if (error) {
+            showToast('Supabase update failed: ' + error.message, 'error');
+            return;
+        }
+
+        user.banned = newBanned;
+        user.status = newBanned ? 'banned' : 'approved';
+        if (typeof window.saveUsers === 'function') window.saveUsers(window.usersDB);
+        if (typeof window.renderTable === 'function') window.renderTable(document.getElementById('searchInput')?.value?.toLowerCase() || '');
+        showToast(`${user.username} ${newBanned ? 'banned' : 'unbanned'}`, newBanned ? 'error' : 'success');
+    };
+
+    // ── Override: confirmDelete → Supabase delete ─────────────────────────
+    window.__origConfirmYes = null;
+    document.addEventListener('DOMContentLoaded', () => {
+        const yesBtn = document.getElementById('confirmYes');
+        if (!yesBtn) return;
+
+        // Replace the existing listener with Supabase-aware one
+        const newBtn = yesBtn.cloneNode(true);
+        yesBtn.parentNode.replaceChild(newBtn, yesBtn);
+
+        newBtn.addEventListener('click', async () => {
+            const pendingId = window.__pendingDeleteId;
+            if (!pendingId) return;
+
+            const user = (window.usersDB || []).find(u => u.id === pendingId);
+
+            // Delete from Supabase users table
+            const { error } = await supabase
+                .from('users')
+                .delete()
+                .eq('id', pendingId);
+
+            if (error) {
+                showToast('Delete failed: ' + error.message, 'error');
+                return;
+            }
+
+            // Note: deleting from auth.users requires service_role key (backend-only).
+            // The user row is removed from `users` table. Auth row remains but is inaccessible.
+
+            window.usersDB = (window.usersDB || []).filter(u => u.id !== pendingId);
+            if (typeof window.saveUsers === 'function') window.saveUsers(window.usersDB);
+            window.__pendingDeleteId = null;
+
+            document.getElementById('confirmModal')?.classList.remove('open');
+            if (typeof window.renderTable === 'function') window.renderTable();
+            showToast(`"${user?.username}" deleted`, 'info');
+        });
+    });
+
+    // Override confirmDelete to save id globally for the replaced button
+    const origConfirmDelete = window.confirmDelete;
+    window.confirmDelete = function(id) {
+        window.__pendingDeleteId = id;
+        origConfirmDelete?.(id);
+    };
+
+    // ── Subscribe admin init to login success event ───────────────────────
+    // The existing checkAdminLogin slides the dashboard in.
+    // We hook into it by patching checkAdminLogin.
+    const origCheckAdmin = window.checkAdminLogin;
+    window.checkAdminLogin = function() {
+        origCheckAdmin?.();
+        // Delay to allow slide animation to complete before Supabase init
+        setTimeout(() => {
+            if (document.getElementById('adminDashboard')?.style.display !== 'none') {
+                window.__initSupabaseAdmin();
+            }
+        }, 600);
+    };
+    </script>
+
+    <!-- =====================================================================
+    // VERSION 2: AI Screenshot Parser
+    // VERSION 2: Multiple table templates
+    // VERSION 3: Team collaboration — shareable session code, WebSocket sync
+    // VERSION 3: BGMI mode — separate column set
+    ===================================================================== -->
 </body>
 </html>

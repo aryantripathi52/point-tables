@@ -4,133 +4,250 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Try BGHQ | Trial Version</title>
+    <meta name="description" content="Try BGHQ Point Table Generator — free trial with watermark.">
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="index.css">
     <style>
-        body { user-select: none; }
-        img { user-drag: none; -webkit-user-drag: none; }
+        /* ── Trial-page specific protections ── */
+        body {
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        img {
+            user-drag: none;
+            -webkit-user-drag: none;
+            pointer-events: none;
+        }
+        .canvas-protect {
+            position: relative;
+        }
+        /* Ensure watermark covers the whole template visually */
+        #mainTableTemplate {
+            position: relative;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body oncontextmenu="return false;">
+    <!-- Loading Spinner -->
+    <div id="bghq-loader">
+        <div class="loader-ring"></div>
+        <div class="loader-text">BGHQ TRIAL</div>
+    </div>
+
+    <!-- NAVBAR -->
     <nav>
-        <div class="logo">BGHQ <span style="font-size: 10px; color: var(--neon-pink);">TRIAL</span></div>
+        <div class="logo">BGHQ <span style="font-size:10px; color:var(--neon-pink); letter-spacing:1px;">TRIAL</span></div>
         <div class="nav-right">
             <button id="themeToggleBtn" class="theme-toggle" title="Switch to Light Mode">🌙</button>
-            <a href="index.html" class="btn btn-blue" style="padding: 8px 20px;">BACK</a>
+            <a href="index.html" class="btn btn-blue" style="padding:8px 20px;">BACK</a>
         </div>
     </nav>
 
     <div class="dashboard-container">
-        <!-- Left Sidebar -->
+        <!-- ═══════════════ LEFT SIDEBAR ═══════════════ -->
         <aside class="sidebar">
+            <div class="sidebar-logo">BGHQ</div>
+
             <div class="sidebar-block">
-                <span class="label-small">Assets</span>
-                <div class="dropdown">
-                    <button class="btn btn-blue" style="width: 100%; font-size: 10px; padding: 8px;">IMPORT IMAGE</button>
-                    <div class="dropdown-content neon-border-blue">
-                        <div class="dropdown-item">Local Storage (Trial)</div>
-                        <div class="dropdown-item">Google Drive (Trial)</div>
-                    </div>
-                </div>
+                <span class="label-small">Assets (Trial)</span>
+                <button class="btn btn-blue" style="width:100%; font-size:10px; padding:8px; opacity:0.5; cursor:not-allowed;" title="Import disabled in trial">⊕ IMPORT IMAGE</button>
+                <div style="font-family:'Rajdhani';font-size:11px;color:var(--neon-pink);text-align:center;margin-top:4px;">Upgrade for asset import</div>
             </div>
+
             <div class="sidebar-block">
-                <span class="label-small">Preview / Place</span>
-                <div class="asset-preview"></div>
+                <span class="label-small">Preview</span>
+                <div class="asset-preview" style="opacity:0.4;pointer-events:none;"></div>
             </div>
+
             <div class="sidebar-block">
-                <span class="label-small">Workflow</span>
-                <button class="btn btn-green" style="width: 100%; font-size: 10px; padding: 8px; margin-bottom: 5px;">CREATE MACRO</button>
-                <button class="btn btn-blue" style="width: 100%; font-size: 10px; padding: 8px;">APPLY MACRO</button>
+                <span class="label-small">Macro (Trial)</span>
+                <button class="btn btn-green" style="width:100%; font-size:10px; padding:8px; margin-bottom:5px; opacity:0.5; cursor:not-allowed;" title="Macro disabled in trial">💾 CREATE MACRO</button>
+                <button class="btn btn-blue"  style="width:100%; font-size:10px; padding:8px; opacity:0.5; cursor:not-allowed;" title="Macro disabled in trial">▶ APPLY MACRO</button>
+                <div style="font-family:'Rajdhani';font-size:11px;color:var(--neon-pink);text-align:center;margin-top:4px;">Upgrade for macro access</div>
             </div>
-            <div style="margin-top: auto;">
-                <button class="btn" id="trialDownloadBtn" style="width: 100%; border: 2px solid var(--neon-pink); color: var(--neon-pink); box-shadow: 0 0 10px var(--neon-pink);">DOWNLOAD PNG</button>
+
+            <div style="margin-top:auto;">
+                <button class="btn btn-pink" id="trialDownloadBtn" style="width:100%; border:2px solid var(--neon-pink); color:var(--neon-pink); box-shadow:0 0 12px var(--neon-pink);">⬇ DOWNLOAD PNG</button>
+                <div style="font-family:'Rajdhani';font-size:11px;color:var(--text-secondary);text-align:center;margin-top:6px;">Join for watermark-free download</div>
             </div>
         </aside>
 
-        <!-- Center Canvas -->
-        <main class="main-canvas-area" id="canvasArea">
-            <div class="watermark">BGHQ TRIAL — NOT FOR DOWNLOAD</div>
+        <!-- ═══════════════ CENTER CANVAS ═══════════════ -->
+        <main class="main-canvas-area canvas-protect" id="canvasArea">
             <div class="point-table-template" id="mainTableTemplate">
+                <!-- Large diagonal watermark -->
+                <div class="watermark">BGHQ TRIAL<br>NOT FOR DOWNLOAD</div>
+
                 <div class="table-header">
-                    <div class="tournament-name" contenteditable="true">TRIAL TOURNAMENT</div>
-                    <div class="logo" style="font-size: 14px;">BGHQ</div>
-                    <div class="date-field" contenteditable="true">DATE: 01/01/2026</div>
+                    <div class="tournament-name" contenteditable="true" data-placeholder="TOURNAMENT NAME">TRIAL TOURNAMENT</div>
+                    <div class="logo" style="font-size:14px;">BGHQ</div>
+                    <div class="date-field" contenteditable="true" data-placeholder="DATE">DATE: 15/03/2026</div>
                 </div>
                 <table class="point-table">
                     <thead>
                         <tr>
                             <th>RANK</th>
-                            <th style="text-align: left;">TEAM NAME</th>
+                            <th style="text-align:left;">TEAM NAME</th>
                             <th>MP</th>
                             <th>PP</th>
                             <th>KP</th>
                             <th>TOTAL</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <script>
-                            for(let i=1; i<=12; i++) {
-                                document.write(`<tr><td>${i}</td><td contenteditable="true" style="text-align: left;">TEAM ${i}</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td></tr>`);
-                            }
-                        </script>
-                    </tbody>
+                    <tbody id="tableBody"></tbody>
                 </table>
             </div>
         </main>
 
-        <!-- Right Toolbar -->
+        <!-- ═══════════════ RIGHT TOOLBAR ═══════════════ -->
         <aside class="toolbar">
-            <div class="tool-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="12" width="20" height="8" rx="2"/><path d="M7 2h10l5 5v13a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7l5-5z"/><path d="M7 2v5h5"/></svg></div>
-            <div class="tool-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.92 0 1.7-.39 2.3-1.03.35-.37.38-.93.22-1.42a1.45 1.45 0 0 0-.25-.38l-.63-.78A1.94 1.94 0 0 1 13 17.5a1.5 1.5 0 0 1 1.5-1.5c.34 0 .68.1 1.05.28a4 4 0 0 0 4.15-.49C21.05 14.7 22 13.43 22 12c0-5.5-4.5-10-10-10z"/></svg></div>
-            <div class="tool-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
-            <div class="tool-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg></div>
-            <div class="tool-icon active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg></div>
+            <div class="tool-icon" title="Locked in Trial" style="opacity:0.4; cursor:default;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <div class="tool-icon" title="Locked in Trial" style="opacity:0.4; cursor:default;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.92 0 1.7-.39 2.3-1.03a1.5 1.5 0 0 0-.25-2.2l-.63-.78A1.94 1.94 0 0 1 13 17.5a1.5 1.5 0 0 1 1.5-1.5c.34 0 .68.1 1.05.28a4 4 0 0 0 4.15-.49C21.05 14.7 22 13.43 22 12c0-5.5-4.5-10-10-10z"/></svg>
+            </div>
+            <div class="tool-icon active" title="Select">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg>
+            </div>
         </aside>
     </div>
 
-    <!-- Blur Overlay -->
+    <!-- Blur Overlay (tab switch / window blur) -->
     <div class="blur-overlay" id="blurOverlay">
-        <div>
-            <h1 class="neon-text-pink">PAUSED</h1>
-            <p>Return to tab to continue</p>
+        <h2 class="neon-text-pink" style="font-size:2rem;">⚠ PAUSED</h2>
+        <p>Return to tab to continue editing</p>
+        <div style="font-family:'Rajdhani';font-size:13px;color:var(--text-secondary);margin-top:8px;">BGHQ Trial — Content protected</div>
+    </div>
+
+    <!-- Download / Join Modal -->
+    <div class="modal" id="downloadModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('downloadModal')">×</button>
+            <h2 class="neon-text-blue" style="margin-bottom:16px; font-size:16px;">Want to Download?</h2>
+            <p style="font-family:'Rajdhani';font-size:15px;color:var(--text-secondary);margin-bottom:28px;line-height:1.6;">
+                Join our Discord for <strong style="color:var(--neon-green);">full access</strong> —<br>
+                no watermarks, unlimited downloads,<br>asset import, macros & more.
+            </p>
+            <a href="#discord" class="btn btn-blue" style="width:100%; display:block; margin-bottom:12px;">
+                JOIN DISCORD
+            </a>
+            <button class="btn" onclick="closeModal('downloadModal')" style="border-color:rgba(255,255,255,0.2);color:var(--text-secondary);font-size:10px;width:100%;">CLOSE</button>
         </div>
     </div>
 
-    <!-- Modal -->
-    <div class="modal" id="downloadModal">
-        <div class="modal-content neon-border-blue">
-            <h2 class="neon-text-blue">Want to download? Join BGHQ!</h2>
-            <p style="margin: 20px 0;">Get full access, no watermarks, and unlimited downloads.</p>
-            <a href="#" class="btn btn-blue" style="width: 100%; border-radius: 20px;">JOIN DISCORD</a>
-            <button class="btn btn-pink" style="margin-top: 15px; font-size: 10px;" onclick="document.getElementById('downloadModal').style.display='none'">CLOSE</button>
-        </div>
-    </div>
+    <!-- Toast -->
+    <div id="toast"></div>
 
     <script src="app.js"></script>
     <script>
-        // Specific restrictions for Try Now
-        document.addEventListener('keydown', e => {
-            if (e.key === 'PrintScreen' || 
-                (e.ctrlKey && (e.key === 's' || e.key === 'p' || e.shiftKey && e.key === 'I' || e.key === 'u')) ||
-                e.key === 'F12') {
-                e.preventDefault();
-                alert('Restricted in Trial Mode!');
+        // ── Build 12 rows ──────────────────────────────────────────────────
+        (function buildRows() {
+            const tbody = document.getElementById('tableBody');
+            for (let i = 1; i <= 12; i++) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="rank-cell">${i}</td>
+                    <td contenteditable="true" style="text-align:left;" class="name-cell">TEAM ${i}</td>
+                    <td contenteditable="true" class="data-cell">0</td>
+                    <td contenteditable="true" class="data-cell">0</td>
+                    <td contenteditable="true" class="data-cell">0</td>
+                    <td contenteditable="true" class="total-cell">0</td>`;
+                tbody.appendChild(tr);
+            }
+            tbody.addEventListener('input', () => {
+                autoCalcTotal();
+                autoSortTable();
+            });
+        })();
+
+        function autoCalcTotal() {
+            document.querySelectorAll('#tableBody tr').forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const pp = parseInt(cells[3]?.innerText) || 0;
+                const kp = parseInt(cells[4]?.innerText) || 0;
+                cells[5].innerText = pp + kp;
+            });
+        }
+
+        function autoSortTable() {
+            const tbody = document.getElementById('tableBody');
+            const rows  = Array.from(tbody.querySelectorAll('tr'));
+            rows.sort((a, b) => {
+                const aT = parseInt(a.querySelectorAll('td')[5]?.innerText) || 0;
+                const bT = parseInt(b.querySelectorAll('td')[5]?.innerText) || 0;
+                return bT - aT;
+            });
+            rows.forEach((row, idx) => {
+                row.querySelectorAll('td')[0].innerText = idx + 1;
+                tbody.appendChild(row);
+            });
+        }
+
+        // ── Modal helpers ──────────────────────────────────────────────────
+        function openModal(id)  { document.getElementById(id).classList.add('open'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+        // ── Download button → show modal ──────────────────────────────────
+        document.getElementById('trialDownloadBtn').addEventListener('click', () => {
+            openModal('downloadModal');
+        });
+
+        // ── Page Visibility API — blur overlay ─────────────────────────────
+        document.addEventListener('visibilitychange', () => {
+            const overlay = document.getElementById('blurOverlay');
+            if (document.hidden) {
+                overlay.classList.add('active');
+            } else {
+                overlay.classList.remove('active');
             }
         });
 
-        document.addEventListener('visibilitychange', () => {
-            document.getElementById('blurOverlay').style.display = document.hidden ? 'flex' : 'none';
-        });
-
+        // ── Window blur → black screen ─────────────────────────────────────
         window.addEventListener('blur', () => {
-           document.getElementById('canvasArea').style.opacity = '0';
+            document.getElementById('canvasArea').style.opacity = '0';
         });
         window.addEventListener('focus', () => {
-           document.getElementById('canvasArea').style.opacity = '1';
+            document.getElementById('canvasArea').style.opacity = '1';
         });
 
-        document.getElementById('trialDownloadBtn').onclick = () => {
-            document.getElementById('downloadModal').style.display = 'flex';
-        };
+        // ── Keyboard restrictions ──────────────────────────────────────────
+        document.addEventListener('keydown', (e) => {
+            const blocked =
+                e.key === 'PrintScreen' ||
+                e.key === 'F12' ||
+                (e.ctrlKey && ['s','p','u'].includes(e.key.toLowerCase())) ||
+                (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(e.key.toLowerCase())) ||
+                (e.metaKey && ['s','p','u'].includes(e.key.toLowerCase()));
+
+            if (blocked) {
+                e.preventDefault();
+                e.stopPropagation();
+                showToast('⚠ Restricted in Trial Mode', 'error');
+                return false;
+            }
+        }, true);
+
+        // ── Close modal on ESC ─────────────────────────────────────────────
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal('downloadModal');
+        });
     </script>
+
+    <!-- =====================================================================
+    // VERSION 2: AI Screenshot Parser
+    // Tesseract.js OCR reads FF match result screenshot, auto-fills table cells
+    // with team name, kills, placement
+
+    // VERSION 2: Multiple table templates
+    // User picks from 3 BGHQ style templates before editing
+
+    // VERSION 3: Team collaboration
+    // Shareable session code, WebSocket live sync, session deletes on download
+
+    // VERSION 3: BGMI mode
+    // Separate column set for BGMI tournaments (different placement/kill scoring)
+    ===================================================================== -->
 </body>
 </html>
